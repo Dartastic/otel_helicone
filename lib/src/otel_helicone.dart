@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_helicone_suppression.dart';
 
@@ -76,84 +75,118 @@ Future<T> tracedHelicone<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_helicone');
   final span = t.startSpan('helicone $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'helicone');
-    span.setStringAttribute('rpc.method', operation);
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'helicone')]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.orgId != null) {
-        span.setStringAttribute('helicone.org.id', res.orgId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.org.id', res.orgId!)]));
       }
       if (res.userId != null) {
-        span.setStringAttribute('helicone.user.id', res.userId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.user.id', res.userId!)]));
       }
       if (res.requestId != null) {
-        span.setStringAttribute('helicone.request.id', res.requestId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.request.id', res.requestId!)]));
       }
       if (res.targetUrl != null) {
-        span.setStringAttribute('helicone.target.url', res.targetUrl!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.target.url', res.targetUrl!)]));
       }
       if (res.provider != null) {
-        span.setStringAttribute('gen_ai.system', res.provider!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('gen_ai.system', res.provider!)]));
       }
       if (res.modelName != null) {
-        span.setStringAttribute('gen_ai.request.model', res.modelName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('gen_ai.request.model', res.modelName!)]));
       }
       if (res.featureName != null) {
-        span.setStringAttribute('helicone.feature', res.featureName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.feature', res.featureName!)]));
       }
       if (res.cacheStatus != null) {
-        span.setStringAttribute('helicone.cache.status', res.cacheStatus!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.cache.status', res.cacheStatus!)]));
       }
       if (res.cacheBucket != null) {
-        span.setStringAttribute('helicone.cache.bucket', res.cacheBucket!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.cache.bucket', res.cacheBucket!)]));
       }
       if (res.promptId != null) {
-        span.setStringAttribute('helicone.prompt.id', res.promptId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.prompt.id', res.promptId!)]));
       }
       if (res.promptVersion != null) {
-        span.setIntAttribute('helicone.prompt.version', res.promptVersion!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('helicone.prompt.version', res.promptVersion!)
+        ]));
       }
       if (res.experimentId != null) {
-        span.setStringAttribute('helicone.experiment.id', res.experimentId!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('helicone.experiment.id', res.experimentId!)
+        ]));
       }
       if (res.rateLimitPolicy != null) {
-        span.setStringAttribute(
-            'helicone.rate_limit.policy', res.rateLimitPolicy!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              'helicone.rate_limit.policy', res.rateLimitPolicy!)
+        ]));
       }
       if (res.retryCount != null) {
-        span.setIntAttribute('helicone.retry.count', res.retryCount!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('helicone.retry.count', res.retryCount!)]));
       }
       if (res.tokensInput != null) {
-        span.setIntAttribute('gen_ai.usage.input_tokens', res.tokensInput!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('gen_ai.usage.input_tokens', res.tokensInput!)
+        ]));
       }
       if (res.tokensOutput != null) {
-        span.setIntAttribute('gen_ai.usage.output_tokens', res.tokensOutput!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('gen_ai.usage.output_tokens', res.tokensOutput!)
+        ]));
       }
       if (res.costUsdMicros != null) {
-        span.setIntAttribute('helicone.cost.usd_micros', res.costUsdMicros!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('helicone.cost.usd_micros', res.costUsdMicros!)
+        ]));
       }
       if (res.latencyMs != null) {
-        span.setIntAttribute('helicone.latency_ms', res.latencyMs!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('helicone.latency_ms', res.latencyMs!)]));
       }
       if (res.timeToFirstTokenMs != null) {
-        span.setIntAttribute(
-            'helicone.time_to_first_token_ms', res.timeToFirstTokenMs!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt(
+              'helicone.time_to_first_token_ms', res.timeToFirstTokenMs!)
+        ]));
       }
       if (res.requestStatus != null) {
-        span.setStringAttribute('helicone.request.status', res.requestStatus!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('helicone.request.status', res.requestStatus!)
+        ]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('helicone.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('helicone.error.code', res.errorCode!)]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.setStringAttribute(
-            ErrorResource.errorType.key, res.errorCode ?? 'helicone.error');
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              ErrorResource.errorType.key, res.errorCode ?? 'helicone.error')
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
