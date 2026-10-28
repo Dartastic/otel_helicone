@@ -1,11 +1,12 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_helicone_suppression.dart';
 
 class HeliconeResult {
+  /// Creates a result.
   const HeliconeResult({
     this.orgId,
     this.userId,
@@ -57,8 +58,13 @@ class HeliconeResult {
   final String? errorMessage;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class HeliconeCallResult<T> {
+  /// Creates a call result.
   const HeliconeCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final HeliconeResult? result;
 }
@@ -66,126 +72,129 @@ class HeliconeCallResult<T> {
 Future<T> tracedHelicone<T>({
   required String operation,
   required Future<HeliconeCallResult<T>> Function() invoke,
-  Tracer? tracer,
+  APITracer? tracer,
 }) async {
   if (heliconeInstrumentationSuppressed()) {
     final r = await invoke();
     return r.value;
   }
-  final t = tracer ?? OTel.tracerProvider().getTracer('otel_helicone');
+  final t = tracer ?? OTelAPI.tracerProvider().getTracer('otel_helicone');
   final span = t.startSpan('helicone $operation', kind: SpanKind.client);
   try {
+    span.addAttributes(OTelAPI.attributes(
+        [OTelAPI.attributeString('rpc.system', 'helicone')]));
     span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.system', 'helicone')]));
-    span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
+        OTelAPI.attributes([OTelAPI.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.orgId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.org.id', res.orgId!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.org.id', res.orgId!)]));
       }
       if (res.userId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.user.id', res.userId!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.user.id', res.userId!)]));
       }
       if (res.requestId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.request.id', res.requestId!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.request.id', res.requestId!)]));
       }
       if (res.targetUrl != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.target.url', res.targetUrl!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.target.url', res.targetUrl!)]));
       }
       if (res.provider != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('gen_ai.system', res.provider!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('gen_ai.system', res.provider!)]));
       }
       if (res.modelName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('gen_ai.request.model', res.modelName!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('gen_ai.request.model', res.modelName!)]));
       }
       if (res.featureName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.feature', res.featureName!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.feature', res.featureName!)]));
       }
       if (res.cacheStatus != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.cache.status', res.cacheStatus!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('helicone.cache.status', res.cacheStatus!)
+        ]));
       }
       if (res.cacheBucket != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.cache.bucket', res.cacheBucket!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('helicone.cache.bucket', res.cacheBucket!)
+        ]));
       }
       if (res.promptId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.prompt.id', res.promptId!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.prompt.id', res.promptId!)]));
       }
       if (res.promptVersion != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('helicone.prompt.version', res.promptVersion!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('helicone.prompt.version', res.promptVersion!)
         ]));
       }
       if (res.experimentId != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('helicone.experiment.id', res.experimentId!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('helicone.experiment.id', res.experimentId!)
         ]));
       }
       if (res.rateLimitPolicy != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
               'helicone.rate_limit.policy', res.rateLimitPolicy!)
         ]));
       }
       if (res.retryCount != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('helicone.retry.count', res.retryCount!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeInt('helicone.retry.count', res.retryCount!)]));
       }
       if (res.tokensInput != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('gen_ai.usage.input_tokens', res.tokensInput!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('gen_ai.usage.input_tokens', res.tokensInput!)
         ]));
       }
       if (res.tokensOutput != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('gen_ai.usage.output_tokens', res.tokensOutput!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('gen_ai.usage.output_tokens', res.tokensOutput!)
         ]));
       }
       if (res.costUsdMicros != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('helicone.cost.usd_micros', res.costUsdMicros!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('helicone.cost.usd_micros', res.costUsdMicros!)
         ]));
       }
       if (res.latencyMs != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('helicone.latency_ms', res.latencyMs!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeInt('helicone.latency_ms', res.latencyMs!)]));
       }
       if (res.timeToFirstTokenMs != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
               'helicone.time_to_first_token_ms', res.timeToFirstTokenMs!)
         ]));
       }
       if (res.requestStatus != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('helicone.request.status', res.requestStatus!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('helicone.request.status', res.requestStatus!)
         ]));
       }
       if (res.statusCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('http.response.status_code', res.statusCode!)
+        ]));
       }
       if (res.errorCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('helicone.error.code', res.errorCode!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('helicone.error.code', res.errorCode!)]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
-              ErrorResource.errorType.key, res.errorCode ?? 'helicone.error')
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              ErrorAttributes.errorType.key, res.errorCode ?? 'helicone.error')
         ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
